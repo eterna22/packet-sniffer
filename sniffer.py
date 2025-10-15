@@ -147,18 +147,15 @@ def main():
         print(f"\n[!] Unexpected error: {e}")
         sys.exit(1)
 
-
 def ethernet_frame(data):
     """Unpack Ethernet frame"""
     dest_mac, src_mac, proto = struct.unpack('! 6s 6s H', data[:14])
     return get_mac_address(dest_mac), get_mac_address(src_mac), socket.htons(proto), data[14:]
 
-
 def get_mac_address(byte_address):
     """Return properly formatted MAC Address (e.g., AA:BB:CC:DD:EE:FF)"""
     bytes_str = map('{:02x}'.format, byte_address)
     return ':'.join(bytes_str).upper()
-
 
 def ipv4_packet(data):
     """Unpack IPv4 packet"""
@@ -168,17 +165,14 @@ def ipv4_packet(data):
     ttl, proto, src, target = struct.unpack('! 8x B B 2x 4s 4s', data[:20])
     return version, header_length, ttl, proto, ipv4(src), ipv4(target), data[header_length:]
 
-
 def ipv4(address):
     """Return properly formatted IPv4 address (e.g., 192.168.1.1)"""
     return '.'.join(map(str, address))
-
 
 def icmp_packet(data):
     """Unpack ICMP packet"""
     icmp_type, code, checksum = struct.unpack('! B B H', data[:4])
     return icmp_type, code, checksum, data[4:]
-
 
 def get_icmp_type(icmp_type):
     """Return ICMP type description"""
@@ -195,7 +189,6 @@ def get_icmp_type(icmp_type):
     }
     return icmp_types.get(icmp_type, 'Unknown')
 
-
 def tcp_packet(data):
     """Unpack TCP segment"""
     src_port, dest_port, sequence, acknowledgement, offset_reserved_flags = struct.unpack(
@@ -209,7 +202,6 @@ def tcp_packet(data):
     flag_fin = offset_reserved_flags & 1
     return (src_port, dest_port, sequence, acknowledgement, flag_urg, flag_ack, 
             flag_psh, flag_rst, flag_syn, flag_fin, data[offset:])
-
 
 def get_tcp_state(syn, ack, fin, rst):
     """Determine TCP connection state based on flags"""
@@ -225,12 +217,10 @@ def get_tcp_state(syn, ack, fin, rst):
         return 'ESTABLISHED (Data Transfer)'
     return 'UNKNOWN'
 
-
 def udp_packet(data):
     """Unpack UDP datagram"""
     src_port, dest_port, size = struct.unpack('! H H 2x H', data[:8])
     return src_port, dest_port, size, data[8:]
-
 
 def format_multi_line(prefix, string, size=80):
     """Format multi-line data for display"""
@@ -248,7 +238,7 @@ def format_multi_line(prefix, string, size=80):
             size -= 1
         return '\n'.join([prefix + line for line in textwrap.wrap(string, size)]) + suffix
     return '\n'.join([prefix + line for line in textwrap.wrap(string, size)])
-
-
+    
 if __name__ == '__main__':
+
     main()
